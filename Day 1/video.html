@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://kit.fontawesome.com/683b4b40e3.js" crossorigin="anonymous"></script>
+    <style>
+        *{
+            font-family: Roboto, Arial, sans-serif;
+        }
+        #navbar {
+            width: 100%;
+            display: flex;
+            /* border: 1px solid black; */
+        }
+
+        #navbar>img {
+            width: 10%;
+            margin-left: 2%;
+        }
+
+        #navbar>input {
+            margin: 15px 0px;
+            margin-left: 5%;
+            width: 45%;
+            padding: 0px 10px;
+            border: 1px solid rgba(61, 61, 61, 0.466);
+            border-right: unset;
+        }
+
+        #navbar>button {
+            margin: 15px 0px;
+            padding: 0px 25px;
+            border: 1px solid rgba(61, 61, 61, 0.466);
+        }
+
+        #mic {
+            margin: 15px 0px;
+            margin-left: 1%;
+            font-size: 25px;
+            padding: 10px 20px;
+            border-radius: 50%;
+            background-color: rgb(236, 236, 236);
+        }
+
+        #main {
+            display: flex;
+            height: 800px;
+            background-color: #f9f9f9;
+            padding-top: 20px;
+            padding-left: 5%;
+            padding-right: 3%;
+            /* border: 1px solid black; */
+        }
+
+        #showVideo {
+            flex: 3;
+            /* margin-left: 5%; */
+            border: 1px solid transparent;
+        }
+        #showVideo>iframe{
+            width: 100%;
+            height: 50%;
+        }
+
+        #recommendation {
+            flex: 2;
+            max-height: 600px;
+            overflow: scroll;
+            /* border: 1px solid black; */
+        }
+        #recommendation::-webkit-scrollbar{
+            display: none;
+        }
+        #recommendation>div{
+            display: flex;
+            margin: 0px 10px;
+            padding: 10px;
+            border: 1px solid transparent;
+        }
+        #recommendation>div:hover{
+            border: 1px solid rgba(0, 0, 0, 0.5);
+        }
+        #recommendation img{
+            width: 45%;
+            height: 90%;
+        }
+        #recommendation p{
+            font-size: 18px;
+            font-weight: 500;
+        }
+        #recommendation>div>div{
+            padding-left: 10px;
+        }
+        #videoSym,
+        #gridSym,
+        #notificationSym,
+        #menu,
+        #profile {
+            margin: 15px 0px;
+            font-size: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #videoSym {
+            margin-left: 3%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="navbar">
+        <div id="menu"><i class="fas fa-bars"></i></div>
+        <img src="https://logos-world.net/wp-content/uploads/2020/04/YouTube-Logo.png" alt="">
+        <input type="text" id="video" placeholder="Search">
+        <button onclick="searchVideo()"><i class="fas fa-search"></i></button>
+        <div id="mic"><i class="fas fa-microphone"></i></div>
+        <div id="videoSym"><i class="fas fa-video"></i></div>
+        <div id="gridSym"><i class="fas fa-th"></i></div>
+        <div id="notificationSym"><i class="far fa-bell"></i></div>
+        <div id="profile"><i class="fas fa-user-circle"></i></div>
+    </div>
+
+    <div id="main">
+        <div id="showVideo"></div>
+        <div id="recommendation"></div>
+    </div>
+</body>
+
+</html>
+<script>
+    let video = JSON.parse(localStorage.getItem("openVideo"));
+    let { id:{videoId}, snippet:{title,description} } = video;
+
+    let iframe = document.createElement("iframe");
+
+    iframe.src = `https://www.youtube.com/embed/${videoId}`;
+    iframe.setAttribute("allowfullscreen", "true");
+
+    let videotitle = document.createElement("p");
+    videotitle.textContent = title;
+    let videodescription = document.createElement("p");
+    videodescription.textContent = description;
+
+    document.querySelector("#showVideo").append(iframe,videotitle,videodescription);
+
+    let appendData = (video) => {
+        video.forEach((element) => {
+            let { id: { videoId } } = element
+            // console.log(element);
+            let card = document.createElement("div");
+            card.addEventListener("click",function(){
+                openvideo(element);
+            });
+
+            let thumbnail = document.createElement("img");
+            thumbnail.src = element.snippet.thumbnails.medium.url;
+
+            let textDiv = document.createElement("div");
+
+            let vidtitle = document.createElement("p");
+            vidtitle.textContent = element.snippet.title;
+
+            textDiv.append(vidtitle);
+            card.append(thumbnail,textDiv)
+            document.querySelector("#recommendation").append(card);
+        });
+    }
+
+    function openvideo(video){
+        localStorage.setItem("openVideo",JSON.stringify(video));
+        window.location.href = "video.html";
+    }
+
+    let response = JSON.parse(localStorage.getItem("fetchedData"));
+    console.log(response);
+    appendData(response);
+
+</script>
